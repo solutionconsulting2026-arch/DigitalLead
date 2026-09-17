@@ -71,18 +71,39 @@ async function handleCreateLead(req, res) {
         JSON.stringify(payload)
       );
 
+      // Parse CRM response to extract actual Lead ID created in system
+      let crmData = null;
+      try {
+        crmData = JSON.parse(saveRes.body);
+      } catch (pErr) {
+        console.warn('Could not parse saveRes.body as JSON:', saveRes.body);
+      }
+
+      let leadId = null;
+      if (Array.isArray(crmData) && crmData[0]) {
+        leadId = crmData[0].ObjectKey || crmData[0].Result?.LeadID?.[0] || crmData[0].CustomObjectId || null;
+      } else if (crmData && typeof crmData === 'object') {
+        leadId = crmData.ObjectKey || crmData.Result?.LeadID?.[0] || crmData.CustomObjectId || null;
+      }
+
+      console.log(`[CRM] Lead successfully created in system. Lead ID: ${leadId}`);
+
       res.writeHead(200, {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       });
-      res.end(saveRes.body);
+      res.end(JSON.stringify({
+        success: true,
+        leadId: leadId ? String(leadId) : null,
+        data: crmData || saveRes.body
+      }));
     } catch (err) {
       console.error('CRM Proxy Error:', err);
       res.writeHead(500, {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       });
-      res.end(JSON.stringify({ error: err.message }));
+      res.end(JSON.stringify({ success: false, error: err.message }));
     }
   });
 }

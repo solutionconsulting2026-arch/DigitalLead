@@ -33,10 +33,10 @@ const I18N = {
     lblContactTime: "Preferred Time to Call",
     consentText: "I authorize Ahli Bank Oman to contact me regarding my home loan inquiry and review my basic eligibility.",
     btnSubmit: "Submit Home Loan Inquiry",
-    modalTitle: "Inquiry Received!",
-    modalDesc: "Thank you for your interest in Ahli Bank Oman Home Loan. A representative from your preferred branch will contact you shortly.",
-    modalLeadId: "Lead ID:",
-    modalRef: "Application Reference:",
+    modalTitle: "Lead Created in System!",
+    modalDesc: "Your home loan application has been successfully created in Ahli Bank's CRM system. A representative from your preferred branch will contact you shortly.",
+    modalLeadId: "CRM Lead ID",
+    modalStatus: "System Status:",
     modalBtn: "Done"
   },
   ar: {
@@ -68,10 +68,10 @@ const I18N = {
     lblContactTime: "الوقت المفضل للتواصل",
     consentText: "أفوض البنك الأهلي عُمان بالتواصل معي بخصوص طلبي والتحقق من أهليتي الائتمانية المبدئية.",
     btnSubmit: "إرسال طلب القرض السكني",
-    modalTitle: "تم استلام طلبك بنجاح!",
-    modalDesc: "شكراً لاهتمامك بقروض البنك الأهلي عُمان السكنية. سيتواصل معك ممثل الفرع المفضل في أقرب وقت.",
-    modalLeadId: "رقم الطلب (Lead ID):",
-    modalRef: "رقم المرجع:",
+    modalTitle: "تم تسجيل الطلب في النظام بنجاح!",
+    modalDesc: "تم إنشاء طلب القرض السكني الخاص بك بنجاح في نظام إدارة علاقات العملاء بالبنك الأهلي. سيتواصل معك ممثل الفرع المفضل في أقرب وقت.",
+    modalLeadId: "رقم الطلب في النظام (Lead ID)",
+    modalStatus: "حالة النظام:",
     modalBtn: "تم"
   }
 };
@@ -251,62 +251,87 @@ function buildCrmPayload(formData) {
   ];
 }
 
-// 2-Step CRM API Integration: OAuth2 token -> saveObject
+// CRM API Integration: Local proxy with fallback to direct CRMnext endpoint
 async function sendCrmLead(crmPayload) {
-  // Method 1: If hosted on a server, try local /api/create-lead proxy to avoid browser CORS issues
+  const candidateEndpoints = [];
+
+  // 1. Relative path if running on http/https
   if (window.location.protocol.startsWith('http')) {
+    candidateEndpoints.push('/api/create-lead');
+  }
+  // 2. Explicit localhost proxy (covers file:/// or other ports)
+  candidateEndpoints.push('http://localhost:3000/api/create-lead');
+  candidateEndpoints.push('http://127.0.0.1:3000/api/create-lead');
+
+  for (const endpoint of candidateEndpoints) {
     try {
-      const proxyRes = await fetch('/api/create-lead', {
+      const proxyRes = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(crmPayload)
       });
       if (proxyRes.ok) {
-        const data = await proxyRes.json();
-        return { success: true, data };
+        const resData = await proxyRes.json();
+        let leadId = resData.leadId;
+        if (!leadId && resData.data) {
+          const item = Array.isArray(resData.data) ? resData.data[0] : resData.data;
+          leadId = item?.ObjectKey || item?.Result?.LeadID?.[0] || item?.CustomObjectId;
+        }
+        if (!leadId && Array.isArray(resData)) {
+          leadId = resData[0]?.ObjectKey || resData[0]?.Result?.LeadID?.[0] || resData[0]?.CustomObjectId;
+        }
+        if (leadId) {
+          return { success: true, leadId: String(leadId), data: resData };
+        }
       }
     } catch (proxyErr) {
-      console.warn('Local proxy attempt failed, trying direct CRM API call:', proxyErr);
+      // Continue to next endpoint candidate
     }
   }
 
-  // Method 2: Direct 2-step API call
-  // Step 1: Hit OAuth2 Token API
-  const tokenRes = await fetch('https://presales.businessbywire.com/restapigb8/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      userName: 'james@crmnext.com',
-      password: 'Chief@admin2025'
-    })
-  });
+  // 3. Fallback: Direct 2-step API call (token -> saveObject)
+  try {
+    const tokenRes = await fetch('https://presales.businessbywire.com/restapigb8/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userName: 'james@crmnext.com',
+        password: 'Chief@admin2025'
+      })
+    });
 
-  if (!tokenRes.ok) {
-    throw new Error(`Auth Token API responded with status ${tokenRes.status}`);
+    if (tokenRes.ok) {
+      const tokenData = await tokenRes.json();
+      const accessToken = tokenData.access_token;
+      if (accessToken) {
+        const saveRes = await fetch('https://presales.businessbywire.com/restapigb8/crmWebApi/saveObject', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
+          body: JSON.stringify(crmPayload)
+        });
+
+        if (saveRes.ok) {
+          const saveData = await saveRes.json();
+          let leadId = null;
+          if (Array.isArray(saveData) && saveData[0]) {
+            leadId = saveData[0].ObjectKey || saveData[0].Result?.LeadID?.[0] || saveData[0].CustomObjectId;
+          }
+          if (leadId) {
+            return { success: true, leadId: String(leadId), data: saveData };
+          }
+        }
+      }
+    }
+  } catch (directErr) {
+    console.warn('Direct CRM API attempt failed:', directErr);
   }
 
-  const tokenData = await tokenRes.json();
-  const accessToken = tokenData.access_token;
-  if (!accessToken) {
-    throw new Error('Access token not found in auth response');
-  }
-
-  // Step 2: Hit saveObject API with Bearer token
-  const saveRes = await fetch('https://presales.businessbywire.com/restapigb8/crmWebApi/saveObject', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`
-    },
-    body: JSON.stringify(crmPayload)
-  });
-
-  if (!saveRes.ok) {
-    throw new Error(`saveObject API responded with status ${saveRes.status}`);
-  }
-
-  const saveData = await saveRes.json();
-  return { success: true, data: saveData };
+  throw new Error(
+    'Unable to reach CRM server. Please run "npm start" to launch the local CRM proxy server (http://localhost:3000).'
+  );
 }
 
 // Submit Handler
@@ -316,12 +341,9 @@ async function handleSubmit(e) {
 
   const btn = document.getElementById('btnSubmit');
   btn.disabled = true;
-  btn.textContent = currentLang === 'en' ? 'Submitting to CRM...' : 'جاري إرسال الطلب إلى النظام...';
-
-  const refCode = generateLeadReference();
+  btn.textContent = currentLang === 'en' ? 'Registering Lead in CRM...' : 'جاري تسجيل الطلب في النظام...';
 
   const formData = {
-    reference: refCode,
     date: new Date().toISOString(),
     fullName: document.getElementById('fullName').value.trim(),
     civilId: document.getElementById('civilId').value.trim(),
@@ -343,24 +365,34 @@ async function handleSubmit(e) {
   };
 
   const crmPayload = buildCrmPayload(formData);
-  let crmObjectKey = null;
+  let crmLeadId = null;
 
   try {
     const res = await sendCrmLead(crmPayload);
-    const crmResult = res.data;
-    if (Array.isArray(crmResult) && crmResult[0]?.ObjectKey) {
-      crmObjectKey = crmResult[0].ObjectKey;
+    crmLeadId = res.leadId;
+
+    if (!crmLeadId) {
+      throw new Error('CRM received the request but did not return a valid Lead ID.');
     }
-    formData.crmObjectKey = crmObjectKey;
+
+    formData.crmLeadId = crmLeadId;
     formData.crmStatus = 'SUCCESS';
-    console.log('CRM Lead Created Successfully:', crmResult);
+    console.log('CRM Lead Created Successfully with System Lead ID:', crmLeadId);
   } catch (err) {
     console.error('CRM Submission error:', err);
-    formData.crmStatus = 'LOCAL_ONLY';
-    formData.crmError = err.message;
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> <span>${I18N[currentLang].btnSubmit}</span>`;
+
+    alert(
+      (currentLang === 'en'
+        ? '⚠️ CRM Connection Notice\n\n'
+        : '⚠️ تنبيه الاتصال بنظام CRM\n\n') +
+      err.message
+    );
+    return;
   }
 
-  // Store lead silently in localStorage
+  // Store lead in localStorage
   try {
     const stored = JSON.parse(localStorage.getItem('ahli_leads') || '[]');
     stored.unshift(formData);
@@ -369,18 +401,11 @@ async function handleSubmit(e) {
     console.error(err);
   }
 
-  // Show Confirmation Modal with prominent Lead ID
-  const leadIdRow = document.getElementById('leadIdRow');
+  // Show Confirmation Modal with prominent REAL CRM Lead ID
   const crmLeadIdVal = document.getElementById('crmLeadIdVal');
-  const leadRefCode = document.getElementById('leadRefCode');
-
-  if (crmObjectKey) {
-    crmLeadIdVal.textContent = '#' + crmObjectKey;
-    leadIdRow.style.display = 'flex';
-  } else {
-    leadIdRow.style.display = 'none';
+  if (crmLeadIdVal) {
+    crmLeadIdVal.textContent = '#' + crmLeadId;
   }
-  leadRefCode.textContent = refCode;
   document.getElementById('successModal').classList.add('show');
 
   // Reset button
