@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahli Bank Oman - Home Loan Inquiry | البنك الأهلي عُمان</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Clean Top Bar -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="header-brand">
+        <img src="logo.png" alt="Ahli Bank Oman - البنك الأهلي عُمان" class="ahli-logo">
+      </div>
+      <div class="header-right">
+        <a href="tel:+96824577177" class="header-contact">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>+968 24577177</span>
+        </a>
+        <button id="btnLangToggle" class="lang-switch-btn" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span id="langText">العربية</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Title Banner -->
+  <div class="page-title-banner">
+    <div class="banner-inner">
+      <span class="banner-pill" data-i18n="pillText">Home Loan Inquiry</span>
+      <h1 data-i18n="mainTitle">Ahli Bank Home Loan Lead Capture</h1>
+      <p data-i18n="subTitle">Interested in owning a home in Oman? Fill in your details below and our team will get in touch with you.</p>
+    </div>
+  </div>
+
+  <!-- Main Lead Capture Form (Single Page, Clean, Simple) -->
+  <main class="form-wrapper">
+    <div class="form-box">
+
+      <form id="leadForm" novalidate>
+
+        <!-- 1. Personal Details -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span class="section-num">1</span>
+            <span data-i18n="secPersonal">Personal Information</span>
+          </h2>
+
+          <div class="form-grid">
+            <!-- Full Name -->
+            <div class="input-group full-col">
+              <label for="fullName">
+                <span data-i18n="lblFullName">Full Name (as per Civil ID / Passport)</span> <span class="star">*</span>
+              </label>
+              <input type="text" id="fullName" placeholder="e.g. Salim Mohammed Al-Harthy" required>
+              <div class="err-text">Please enter your full name.</div>
+            </div>
+
+            <!-- Civil ID -->
+            <div class="input-group">
+              <label for="civilId">
+                <span data-i18n="lblCivilId">Civil ID / Resident Card Number</span> <span class="star">*</span>
+              </label>
+              <input type="text" id="civilId" placeholder="e.g. 12345678" maxlength="10" required>
+              <div class="err-text">Please enter a valid Civil ID (7-10 digits).</div>
+            </div>
+
+            <!-- Nationality -->
+            <div class="input-group">
+              <label><span data-i18n="lblNationality">Nationality</span> <span class="star">*</span></label>
+              <div class="radio-toggle-group">
+                <label class="radio-pill active">
+                  <input type="radio" name="nationality" value="omani" checked>
+                  <span data-i18n="natOmani">Omani Citizen</span>
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="nationality" value="expat">
+                  <span data-i18n="natExpat">Resident Expatriate</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Mobile Phone -->
+            <div class="input-group">
+              <label for="mobile">
+                <span data-i18n="lblMobile">Mobile Number</span> <span class="star">*</span>
+              </label>
+              <div class="prefix-input-wrap">
+                <span class="phone-code">🇴🇲 +968</span>
+                <input type="tel" id="mobile" placeholder="9XXXXXXX or 7XXXXXXX" maxlength="12" required>
+              </div>
+              <div class="err-text">Enter a valid 8-digit Oman mobile number.</div>
+            </div>
+
+            <!-- Email -->
+            <div class="input-group">
+              <label for="email">
+                <span data-i18n="lblEmail">Email Address</span> <span class="star">*</span>
+              </label>
+              <input type="email" id="email" placeholder="example@email.com" required>
+              <div class="err-text">Please enter a valid email address.</div>
+            </div>
+
+            <!-- Governorate -->
+            <div class="input-group">
+              <label for="governorate">
+                <span data-i18n="lblGovernorate">Governorate</span> <span class="star">*</span>
+              </label>
+              <select id="governorate" required>
+                <option value="Muscat" selected>Muscat (مسقط)</option>
+                <option value="Dhofar">Dhofar (ظفار)</option>
+                <option value="Al Batinah North">Al Batinah North (شمال الباطنة)</option>
+                <option value="Al Batinah South">Al Batinah South (جنوب الباطنة)</option>
+                <option value="Al Dakhiliyah">Al Dakhiliyah (الداخلية)</option>
+                <option value="Al Sharqiyah North">Al Sharqiyah North (شمال الشرقية)</option>
+                <option value="Al Sharqiyah South">Al Sharqiyah South (جنوب الشرقية)</option>
+                <option value="Al Dhahirah">Al Dhahirah (الظاهرة)</option>
+                <option value="Al Buraimi">Al Buraimi (البريمي)</option>
+                <option value="Musandam">Musandam (مسندم)</option>
+                <option value="Al Wusta">Al Wusta (الوسطى)</option>
+              </select>
+            </div>
+
+            <!-- Preferred Branch -->
+            <div class="input-group">
+              <label for="branch">
+                <span data-i18n="lblBranch">Preferred Ahli Bank Branch</span> <span class="star">*</span>
+              </label>
+              <select id="branch" required>
+                <option value="Al Khuwair (Head Office)" selected>Al Khuwair (Head Office)</option>
+                <option value="Azaiba Main Branch">Azaiba Main Branch</option>
+                <option value="Seeb Commercial Centre">Seeb Commercial Centre</option>
+                <option value="Muscat Grand Mall Branch">Muscat Grand Mall Branch</option>
+                <option value="Sohar Branch">Sohar Branch</option>
+                <option value="Salalah Main Branch">Salalah Main Branch</option>
+                <option value="Nizwa Branch">Nizwa Branch</option>
+                <option value="Sur Branch">Sur Branch</option>
+                <option value="Barka Branch">Barka Branch</option>
+                <option value="Ibri Branch">Ibri Branch</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Employment & Income -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span class="section-num">2</span>
+            <span data-i18n="secEmployment">Employment & Income</span>
+          </h2>
+
+          <div class="form-grid">
+            <!-- Sector -->
+            <div class="input-group">
+              <label for="sector">
+                <span data-i18n="lblSector">Employment Sector</span> <span class="star">*</span>
+              </label>
+              <select id="sector" required>
+                <option value="government" selected>Government & Public Sector</option>
+                <option value="semi_government">Semi-Government</option>
+                <option value="private">Private Sector</option>
+                <option value="self_employed">Self-Employed / Business Owner</option>
+              </select>
+            </div>
+
+            <!-- Employer Name -->
+            <div class="input-group">
+              <label for="employer">
+                <span data-i18n="lblEmployer">Employer / Ministry Name</span> <span class="star">*</span>
+              </label>
+              <input type="text" id="employer" placeholder="e.g. Ministry of Education" required>
+              <div class="err-text">Please enter your employer name.</div>
+            </div>
+
+            <!-- Monthly Net Salary -->
+            <div class="input-group">
+              <label for="salary">
+                <span data-i18n="lblSalary">Monthly Net Salary (OMR)</span> <span class="star">*</span>
+              </label>
+              <div class="suffix-input-wrap">
+                <input type="number" id="salary" placeholder="e.g. 900" min="200" step="50" required>
+                <span class="unit-tag">OMR</span>
+              </div>
+              <div class="err-text">Please enter your monthly salary.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Home Loan Requirements -->
+        <div class="form-section">
+          <h2 class="section-title">
+            <span class="section-num">3</span>
+            <span data-i18n="secLoan">Home Loan Interest & Property</span>
+          </h2>
+
+          <div class="form-grid">
+            <!-- Loan Purpose -->
+            <div class="input-group">
+              <label for="loanPurpose">
+                <span data-i18n="lblPurpose">Loan Purpose</span> <span class="star">*</span>
+              </label>
+              <select id="loanPurpose" required>
+                <option value="ready_property" selected>Purchase Ready Property (Villa/Apartment)</option>
+                <option value="land_purchase">Purchase Residential Land / Plot</option>
+                <option value="construction">Home Construction / Renovation</option>
+                <option value="buyout">Transfer / Buyout Existing Loan</option>
+              </select>
+            </div>
+
+            <!-- Property Location -->
+            <div class="input-group">
+              <label for="propLocation">
+                <span data-i18n="lblPropLoc">Property Location</span> <span class="star">*</span>
+              </label>
+              <input type="text" id="propLocation" placeholder="e.g. Muscat - Seeb" required>
+              <div class="err-text">Please enter property location.</div>
+            </div>
+
+            <!-- Estimated Property Value -->
+            <div class="input-group">
+              <label for="propValue">
+                <span data-i18n="lblPropVal">Estimated Property Value (OMR)</span> <span class="star">*</span>
+              </label>
+              <div class="suffix-input-wrap">
+                <input type="number" id="propValue" placeholder="e.g. 75000" min="10000" step="1000" required>
+                <span class="unit-tag">OMR</span>
+              </div>
+              <div class="err-text">Please enter the estimated property value.</div>
+            </div>
+
+            <!-- Desired Loan Amount -->
+            <div class="input-group">
+              <label for="loanAmount">
+                <span data-i18n="lblLoanAmt">Desired Loan Amount (OMR)</span> <span class="star">*</span>
+              </label>
+              <div class="suffix-input-wrap">
+                <input type="number" id="loanAmount" placeholder="e.g. 60000" min="5000" max="350000" step="1000" required>
+                <span class="unit-tag">OMR</span>
+              </div>
+              <div class="err-text">Please enter the requested loan amount.</div>
+            </div>
+
+            <!-- Preferred Loan Tenure -->
+            <div class="input-group">
+              <label for="tenure">
+                <span data-i18n="lblTenure">Preferred Tenure</span> <span class="star">*</span>
+              </label>
+              <select id="tenure" required>
+                <option value="5">5 Years</option>
+                <option value="10">10 Years</option>
+                <option value="15">15 Years</option>
+                <option value="20">20 Years</option>
+                <option value="25" selected>25 Years (Maximum)</option>
+              </select>
+            </div>
+
+            <!-- Preferred Contact Time -->
+            <div class="input-group">
+              <label for="contactTime">
+                <span data-i18n="lblContactTime">Preferred Time to Call</span>
+              </label>
+              <select id="contactTime">
+                <option value="morning" selected>Morning (8:00 AM - 1:00 PM)</option>
+                <option value="afternoon">Afternoon (1:00 PM - 5:00 PM)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Consent & Submission -->
+        <div class="consent-box">
+          <label class="checkbox-label">
+            <input type="checkbox" id="chkConsent" required>
+            <span data-i18n="consentText">
+              I authorize Ahli Bank Oman to contact me regarding my home loan inquiry and review my basic eligibility.
+            </span>
+          </label>
+          <div class="err-text" id="consentErr" style="margin-top: 0.35rem;">Please agree to proceed.</div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-wrap">
+          <button type="submit" id="btnSubmit" class="btn-submit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span data-i18n="btnSubmit">Submit Home Loan Inquiry</span>
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Simple Success Message Modal -->
+  <div id="successModal" class="simple-modal-backdrop">
+    <div class="simple-modal-card">
+      <div class="modal-top-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004F8C" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3 data-i18n="modalTitle">Inquiry Received!</h3>
+      <p data-i18n="modalDesc">Thank you for your interest in Ahli Bank Oman Home Loan. A representative from your preferred branch will contact you shortly.</p>
+      
+      <div class="ref-pill-box">
+        <div class="lead-id-row" id="leadIdRow" style="display: none;">
+          <span class="lead-id-label" data-i18n="modalLeadId">Lead ID:</span>
+          <span class="lead-id-value" id="crmLeadIdVal">-</span>
+        </div>
+        <div class="lead-ref-row">
+          <span data-i18n="modalRef">Reference No:</span> <strong id="leadRefCode">ABO-HL-2026-12345</strong>
+        </div>
+      </div>
+
+      <button type="button" id="btnModalClose" class="btn-modal-done" data-i18n="modalBtn">Done</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2026 Ahli Bank SAOG. Licensed and regulated by the Central Bank of Oman (CBO).</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
