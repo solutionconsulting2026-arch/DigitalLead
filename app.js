@@ -251,15 +251,22 @@ function buildCrmPayload(formData) {
   ];
 }
 
-// CRM API Integration: Local proxy with fallback to direct CRMnext endpoint
+// CRM API Integration: Supports GCP deployment, local proxy, and direct endpoints
 async function sendCrmLead(crmPayload) {
   const candidateEndpoints = [];
 
-  // 1. Relative path if running on http/https
+  // 0. Custom Cloud/GCP backend URL (if configured for GitHub Pages / remote hosting)
+  const customBackend = window.CRM_BACKEND_URL || localStorage.getItem('crm_backend_url');
+  if (customBackend) {
+    const clean = customBackend.replace(/\/+$/, '');
+    candidateEndpoints.push(clean.endsWith('/api/create-lead') ? clean : `${clean}/api/create-lead`);
+  }
+
+  // 1. Relative path if running on http/https (e.g. when accessing the GCP container directly)
   if (window.location.protocol.startsWith('http')) {
     candidateEndpoints.push('/api/create-lead');
   }
-  // 2. Explicit localhost proxy (covers file:/// or other ports)
+  // 2. Explicit localhost proxy (covers local dev)
   candidateEndpoints.push('http://localhost:3000/api/create-lead');
   candidateEndpoints.push('http://127.0.0.1:3000/api/create-lead');
 
@@ -330,7 +337,7 @@ async function sendCrmLead(crmPayload) {
   }
 
   throw new Error(
-    'Unable to reach CRM server. Please run "npm start" to launch the local CRM proxy server (http://localhost:3000).'
+    'Unable to reach CRM proxy server. If running on GitHub Pages, ensure your GCP backend container is active (or set window.CRM_BACKEND_URL). For local testing, run "npm start".'
   );
 }
 
