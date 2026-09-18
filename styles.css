@@ -76,9 +76,9 @@ body[dir="rtl"] {
 }
 
 .ahli-logo {
-  height: 84px;
+  height: 72px;
   width: auto;
-  max-width: 220px;
+  max-width: 250px;
   object-fit: contain;
   display: block;
 }
