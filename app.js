@@ -413,6 +413,7 @@ async function handleSubmit(e) {
   const crmLeadIdVal = document.getElementById('crmLeadIdVal');
   if (crmLeadIdVal) {
     crmLeadIdVal.textContent = '#' + crmLeadId;
+  }
   document.getElementById('successModal').classList.add('show');
 
   // Reset button
