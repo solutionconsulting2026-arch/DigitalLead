@@ -70,7 +70,7 @@ const sampleFormData = {
 // Check that app.js contains all required CRM field names
 const requiredFields = [
   'LayoutID', 'ProcessID', 'LastName', 'Product', 'Rating',
-  'LeadOwnerName', 'MobilePhone', 'Email', 'ProductCategory', 'StatusCode',
+  'LeadOwnerName', 'AssignTo', 'MobilePhone', 'Email', 'ProductCategory', 'StatusCode',
   'Lea_ex4_174', 'Lea_ex3_70', 'XMLField_9677', 'XMLField_9678', 'Lea_ex9_24',
   'Lea_ex1_71', 'Lea_ex1_95', 'XMLField_9779', 'XMLField_9780', 'XMLField_9781',
   'XMLField_9782', 'Lea_ex4_114'
