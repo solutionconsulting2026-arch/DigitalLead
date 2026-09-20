@@ -258,21 +258,28 @@ function getNextCrmLeadId() {
   return String(lastId);
 }
 
-// CRM API Integration: Supports GCP deployment, local proxy, direct endpoints, and GitHub Pages
+// CRM API Integration: Supports subpath hosting (/digitaleadabo/), GCP, local proxy, and direct endpoints
 async function sendCrmLead(crmPayload) {
   const candidateEndpoints = [];
 
-  // 0. Custom Cloud/GCP backend URL (if configured for GitHub Pages / remote hosting)
+  // 0. Custom Cloud/GCP backend URL (if configured)
   const customBackend = window.CRM_BACKEND_URL || localStorage.getItem('crm_backend_url');
   if (customBackend) {
     const clean = customBackend.replace(/\/+$/, '');
     candidateEndpoints.push(clean.endsWith('/api/create-lead') ? clean : `${clean}/api/create-lead`);
   }
 
-  // 1. Relative path if running on http/https (e.g. when accessing the GCP container directly)
-  if (window.location.protocol.startsWith('http') && !window.location.hostname.endsWith('github.io')) {
+  // 1. Current subpath-aware relative endpoint (e.g. /digitaleadabo/api/create-lead)
+  const currentPath = window.location.pathname.replace(/\/index\.html$/i, '').replace(/\/+$/, '');
+  if (currentPath && !window.location.hostname.endsWith('github.io')) {
+    candidateEndpoints.push(`${currentPath}/api/create-lead`);
+  }
+  if (!window.location.hostname.endsWith('github.io')) {
+    candidateEndpoints.push('api/create-lead');
+    candidateEndpoints.push('./api/create-lead');
     candidateEndpoints.push('/api/create-lead');
   }
+
   // 2. Explicit localhost proxy (covers local dev)
   candidateEndpoints.push('http://localhost:3000/api/create-lead');
   candidateEndpoints.push('http://127.0.0.1:3000/api/create-lead');

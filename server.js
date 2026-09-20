@@ -122,11 +122,14 @@ const server = http.createServer((req, res) => {
 
   let reqPath = req.url.split('?')[0];
 
-  // API Route for CRM Lead Creation
-  if (reqPath === '/api/create-lead' && req.method === 'POST') {
+  // API Route for CRM Lead Creation (supports root /api/create-lead or subpath /digitaleadabo/api/create-lead)
+  if ((reqPath === '/api/create-lead' || reqPath.endsWith('/api/create-lead')) && req.method === 'POST') {
     handleCreateLead(req, res);
     return;
   }
+
+  // Strip subpath prefix if ingress forwards it
+  reqPath = reqPath.replace(/^\/digitaleadabo/, '');
 
   if (reqPath === '/' || reqPath === '') {
     reqPath = '/index.html';
