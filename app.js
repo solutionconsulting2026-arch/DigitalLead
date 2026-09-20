@@ -251,25 +251,22 @@ function buildCrmPayload(formData) {
   ];
 }
 
-function getNextCrmLeadId() {
-  let lastId = parseInt(localStorage.getItem('crm_last_lead_id') || '20863', 10);
-  lastId += 1;
-  localStorage.setItem('crm_last_lead_id', String(lastId));
-  return String(lastId);
-}
-
-// CRM API Integration: Supports subpath hosting (/digitaleadabo/), GCP, local proxy, and direct endpoints
+// CRM API Integration: Supports GitHub Pages, GCP/Kubernetes, and local proxy
 async function sendCrmLead(crmPayload) {
   const candidateEndpoints = [];
 
-  // 0. Custom Cloud/GCP backend URL (if configured)
+  // 1. Custom backend URL override (if specified via script or localStorage)
   const customBackend = window.CRM_BACKEND_URL || localStorage.getItem('crm_backend_url');
   if (customBackend) {
     const clean = customBackend.replace(/\/+$/, '');
     candidateEndpoints.push(clean.endsWith('/api/create-lead') ? clean : `${clean}/api/create-lead`);
   }
 
-  // 1. Current subpath-aware relative endpoint (e.g. /digitaleadabo/api/create-lead)
+  // 2. Production Live CRM API Proxy (CORS-enabled backend on GKE)
+  // This allows GitHub Pages (https://solutionconsulting2026-arch.github.io/DigitalLead/) to hit the real CRM API in real-time!
+  candidateEndpoints.push('https://presales1.businessbywire.com/digitaleadabo/api/create-lead');
+
+  // 3. Current origin relative endpoints (when running inside GKE ingress or custom domain)
   const currentPath = window.location.pathname.replace(/\/index\.html$/i, '').replace(/\/+$/, '');
   if (currentPath && !window.location.hostname.endsWith('github.io')) {
     candidateEndpoints.push(`${currentPath}/api/create-lead`);
@@ -280,17 +277,21 @@ async function sendCrmLead(crmPayload) {
     candidateEndpoints.push('/api/create-lead');
   }
 
-  // 2. Explicit localhost proxy (covers local dev)
+  // 4. Local dev proxies
   candidateEndpoints.push('http://localhost:3000/api/create-lead');
   candidateEndpoints.push('http://127.0.0.1:3000/api/create-lead');
 
+  let lastError = null;
+
   for (const endpoint of candidateEndpoints) {
     try {
+      console.log(`[CRM Lead API] Submitting lead in real-time to: ${endpoint}`);
       const proxyRes = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(crmPayload)
       });
+
       if (proxyRes.ok) {
         const resData = await proxyRes.json();
         let leadId = resData.leadId;
@@ -302,63 +303,24 @@ async function sendCrmLead(crmPayload) {
           leadId = resData[0]?.ObjectKey || resData[0]?.Result?.LeadID?.[0] || resData[0]?.CustomObjectId;
         }
         if (leadId) {
-          return { success: true, leadId: String(leadId), data: resData };
+          console.log(`[CRM Lead API] Success! Real-time Lead #${leadId} created via ${endpoint}`);
+          return { success: true, leadId: String(leadId), data: resData, endpoint };
         }
+        if (resData.error || resData.success === false) {
+          lastError = new Error(resData.error || 'CRM returned failure without Lead ID');
+        }
+      } else {
+        const errBody = await proxyRes.text().catch(() => '');
+        lastError = new Error(`HTTP ${proxyRes.status} from ${endpoint}: ${errBody}`);
       }
     } catch (proxyErr) {
-      // Continue to next endpoint candidate
+      console.warn(`[CRM Lead API] Endpoint ${endpoint} unreachable:`, proxyErr);
+      lastError = proxyErr;
     }
   }
 
-  // 3. Direct 2-step API call (token -> saveObject)
-  try {
-    const tokenRes = await fetch('https://presales.businessbywire.com/restapigb8/oauth2/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userName: 'james@crmnext.com',
-        password: 'Chief@admin2025'
-      })
-    });
-
-    if (tokenRes.ok) {
-      const tokenData = await tokenRes.json();
-      const accessToken = tokenData.access_token;
-      if (accessToken) {
-        const saveRes = await fetch('https://presales.businessbywire.com/restapigb8/crmWebApi/saveObject', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          },
-          body: JSON.stringify(crmPayload)
-        });
-
-        if (saveRes.ok) {
-          const saveData = await saveRes.json();
-          let leadId = null;
-          if (Array.isArray(saveData) && saveData[0]) {
-            leadId = saveData[0].ObjectKey || saveData[0].Result?.LeadID?.[0] || saveData[0].CustomObjectId;
-          }
-          if (leadId) {
-            return { success: true, leadId: String(leadId), data: saveData };
-          }
-        }
-      }
-    }
-  } catch (directErr) {
-    // Direct call blocked by browser CORS
-  }
-
-  // 4. Standalone / GitHub Pages Mode:
-  // When running statically on GitHub Pages without a backend proxy connected, seamlessly register lead with official CRM ID format
-  const fallbackLeadId = getNextCrmLeadId();
-  console.info(`[Lead Registration] Registered in GitHub Pages mode with Lead ID: #${fallbackLeadId}`);
-  return {
-    success: true,
-    leadId: fallbackLeadId,
-    mode: 'github-pages-standalone'
-  };
+  // Never fabricate dummy/fake data
+  throw lastError || new Error('Could not connect to CRM API endpoint.');
 }
 
 // Submit Handler
@@ -396,15 +358,21 @@ async function handleSubmit(e) {
 
   try {
     const res = await sendCrmLead(crmPayload);
-    crmLeadId = res.leadId || getNextCrmLeadId();
+    if (!res || !res.leadId) {
+      throw new Error(res?.error || 'No lead ID returned from CRM system');
+    }
+    crmLeadId = res.leadId;
     formData.crmLeadId = crmLeadId;
     formData.crmStatus = 'SUCCESS';
-    console.log('Lead Registered Successfully with System Lead ID:', crmLeadId);
+    console.log('Real Lead Registered Successfully in CRM. Lead ID:', crmLeadId);
   } catch (err) {
     console.error('CRM Submission error:', err);
-    crmLeadId = getNextCrmLeadId();
-    formData.crmLeadId = crmLeadId;
-    formData.crmStatus = 'SUCCESS';
+    alert(currentLang === 'en'
+      ? 'CRM System Error: Unable to create lead in real-time.\n\nError: ' + (err.message || 'Connection failed') + '\n\nPlease check your internet connection and try again.'
+      : 'خطأ في نظام إدارة علاقات العملاء: تعذر إنشاء الطلب في الوقت الفعلي.\n\nالخطأ: ' + (err.message || 'فشل الاتصال') + '\n\nيرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.');
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> <span>${I18N[currentLang].btnSubmit}</span>`;
+    return;
   }
 
   // Store lead in localStorage
