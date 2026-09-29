@@ -1,20 +1,20 @@
 {
-  "name": "ahli-bank-oman-home-loan-lead-capture",
-  "version": "1.0.0",
-  "description": "High-conversion Home Loan Lead Capture Form for Ahli Bank Oman with live EMI/DBR calculator and CBO regulatory compliance.",
+  "name": "xyz-bank-home-loan-lead-capture",
+  "version": "2.1.0",
+  "description": "Clean, high-conversion Home Loan Lead Capture Portal for XYZ Bank with instant CRM API integration and bilingual support.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "node test_lead_capture.js"
   },
   "keywords": [
-    "ahli-bank-oman",
+    "xyz-bank",
     "home-loan",
-    "housing-finance",
+    "mortgage",
     "lead-capture",
-    "oman-banking",
-    "cbo"
+    "digital-banking",
+    "crmnext"
   ],
-  "author": "Ahli Bank Oman Digital Solutions",
+  "author": "XYZ Bank Digital Solutions",
   "license": "UNLICENSED"
 }

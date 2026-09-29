@@ -155,7 +155,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
   console.log(`====================================================`);
-  console.log(` Ahli Bank Oman - Home Loan Lead Capture Portal`);
+  console.log(` XYZ Bank - Home Loan Lead Capture Portal`);
   console.log(` Running locally at: http://localhost:${PORT}`);
   console.log(` CRM API Route: http://localhost:${PORT}/api/create-lead`);
   console.log(` Press Ctrl+C to stop`);

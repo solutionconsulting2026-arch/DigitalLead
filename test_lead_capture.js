@@ -1,72 +1,55 @@
-// Simple verification test for Ahli Bank Oman Lead Capture Form
+// Simple verification test for XYZ Bank Lead Capture Form
 const assert = require('assert');
 
 function validatePhone(phone) {
-  const cleaned = phone.replace(/[\s\-]/g, '');
-  return /^(?:\+968|00968|968)?([79]\d{7})$/.test(cleaned);
+  const cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
+  return /^\d{7,15}$/.test(cleaned);
 }
 
 function validateCivilId(civilId) {
-  return /^\d{7,10}$/.test(civilId.trim());
+  return /^[A-Za-z0-9\-]{5,16}$/.test(civilId.trim());
 }
 
 function generateLeadReference() {
   const year = new Date().getFullYear();
   const rand = Math.floor(10000 + Math.random() * 90000);
-  return `ABO-HL-${year}-${rand}`;
+  return `XYZ-HL-${year}-${rand}`;
 }
 
-console.log('--- Running Ahli Bank Lead Capture Validation Tests ---');
+console.log('--- Running XYZ Bank Lead Capture Validation Tests ---');
 
 // Test 1: Phone validation
+assert.strictEqual(validatePhone('+1 555-012-3456'), true);
+assert.strictEqual(validatePhone('5550123456'), true);
 assert.strictEqual(validatePhone('+96891234567'), true);
-assert.strictEqual(validatePhone('79876543'), true);
-assert.strictEqual(validatePhone('12345678'), false);
-console.log('✓ Oman phone validation passed');
+assert.strictEqual(validatePhone('123'), false);
+console.log('✓ Generic phone validation passed');
 
-// Test 2: Civil ID validation
+// Test 2: ID validation
 assert.strictEqual(validateCivilId('12345678'), true);
-assert.strictEqual(validateCivilId('123'), false);
-console.log('✓ Civil ID validation passed');
+assert.strictEqual(validateCivilId('ID-98234'), true);
+assert.strictEqual(validateCivilId('12'), false);
+console.log('✓ Generic ID validation passed');
 
 // Test 3: Reference code generation
 const ref = generateLeadReference();
-assert(/^ABO-HL-\d{4}-\d{5}$/.test(ref));
+assert(/^XYZ-HL-\d{4}-\d{5}$/.test(ref));
 console.log(`✓ Reference code generated: ${ref}`);
 
-// Test 4: Verify HTML does not contain removed fields
+// Test 4: Verify HTML does not contain old Ahli Bank specific strings
 const fs = require('fs');
 const path = require('path');
 const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const js = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
 
-assert.strictEqual(html.includes('Existing Ahli Bank Customer'), false, 'Should not contain Existing Ahli Bank Customer');
-assert.strictEqual(html.includes('name="existingCustomer"'), false, 'Should not contain existingCustomer input');
-assert.strictEqual(html.includes('Financing Option'), false, 'Should not contain Financing Option');
-assert.strictEqual(html.includes('name="financeType"'), false, 'Should not contain financeType radio');
-assert.strictEqual(html.includes('Home Finance'), false, 'Should not contain Home Finance in index.html');
-assert.strictEqual(js.includes('Home Finance'), false, 'Should not contain Home Finance in app.js');
-console.log('✓ Removed fields and loan terminology verified');
+assert.strictEqual(html.includes('Ahli Bank'), false, 'Should not contain Ahli Bank in index.html');
+assert.strictEqual(html.includes('Central Bank of Oman'), false, 'Should not contain Central Bank of Oman');
+assert.strictEqual(html.includes('(OMR)'), false, 'Should not contain (OMR) in index.html');
+assert.strictEqual(html.includes('XYZ Bank'), true, 'Must contain XYZ Bank in index.html');
+assert.strictEqual(js.includes('XYZ Bank'), true, 'Must contain XYZ Bank in app.js');
+console.log('✓ Brand genericization to XYZ Bank verified');
 
 // Test 5: Verify CRM Payload generation
-const sampleFormData = {
-  fullName: 'Aditya Jain',
-  civilId: '12345678',
-  nationality: 'omani',
-  mobile: '+96898939939',
-  email: 'aditya.jain@businessnext.com',
-  governorate: 'Muscat',
-  branch: 'Al Khuwair (Head Office)',
-  sector: 'private',
-  employer: 'Muscat Trading LLC',
-  salary: '1850',
-  loanPurpose: 'ready_property',
-  propLocation: 'Al Mouj, Muscat',
-  propValue: '120000',
-  loanAmount: '96000',
-  tenure: '20'
-};
-
 // Check that app.js contains all required CRM field names
 const requiredFields = [
   'LayoutID', 'ProcessID', 'LastName', 'Product', 'Rating',

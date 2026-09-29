@@ -1,10 +1,16 @@
-/* Ahli Bank Oman - Simple Home Loan Lead Capture Styling */
+/* XYZ Bank - Simple Home Loan Lead Capture Styling */
 :root {
-  --abo-blue: #004F8C;
-  --abo-blue-dark: #003761;
-  --abo-blue-light: #F0F6FB;
-  --abo-gold: #D4A017;
-  --abo-gold-hover: #BA8A0E;
+  --xyz-primary: #004F8C;
+  --xyz-primary-dark: #003761;
+  --xyz-primary-light: #F0F6FB;
+  --xyz-gold: #D4A017;
+  --xyz-gold-hover: #BA8A0E;
+
+  --abo-blue: var(--xyz-primary);
+  --abo-blue-dark: var(--xyz-primary-dark);
+  --abo-blue-light: var(--xyz-primary-light);
+  --abo-gold: var(--xyz-gold);
+  --abo-gold-hover: var(--xyz-gold-hover);
   
   --slate-900: #0F172A;
   --slate-800: #1E293B;
@@ -75,10 +81,11 @@ body[dir="rtl"] {
   align-items: center;
 }
 
+.brand-logo,
 .ahli-logo {
-  height: 72px;
+  height: 58px;
   width: auto;
-  max-width: 250px;
+  max-width: 270px;
   object-fit: contain;
   display: block;
 }
@@ -587,8 +594,9 @@ body[dir="rtl"] .suffix-input-wrap input {
 
 /* Responsive */
 @media (max-width: 680px) {
+  .brand-logo,
   .ahli-logo {
-    height: 62px;
+    height: 48px;
   }
   .form-grid {
     grid-template-columns: 1fr;

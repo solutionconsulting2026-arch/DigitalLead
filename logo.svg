@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 72" width="320" height="72" fill="none">
+  <defs>
+    <linearGradient id="xyzBlue1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0066B3" />
+      <stop offset="100%" stop-color="#003566" />
+    </linearGradient>
+    <linearGradient id="xyzBlue2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7" />
+      <stop offset="100%" stop-color="#0369A1" />
+    </linearGradient>
+    <linearGradient id="xyzGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+    <filter id="xyzShadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-opacity="0.12" flood-color="#001F3F"/>
+    </filter>
+  </defs>
+
+  <!-- Modern XYZ Bank Crest / Emblem -->
+  <g transform="translate(4, 6)" filter="url(#xyzShadow)">
+    <!-- Base Shield / Hexagon Structure -->
+    <path d="M30 4 L56 18 L56 46 L30 60 L4 46 L4 18 Z" fill="url(#xyzBlue1)" />
+    
+    <!-- Top-Right Accent Facet -->
+    <path d="M30 4 L56 18 L30 32 L4 18 Z" fill="url(#xyzBlue2)" opacity="0.95" />
+    
+    <!-- Bottom Gold Energy Corner -->
+    <path d="M30 32 L56 46 L30 60 Z" fill="url(#xyzGold)" />
+    
+    <!-- Center Stylized 'X' Icon -->
+    <path d="M19 20 L41 44 M41 20 L19 44" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="30" cy="32" r="3.5" fill="#F59E0B" />
+  </g>
+
+  <!-- Typography -->
+  <g transform="translate(74, 0)">
+    <!-- Brand Title -->
+    <text x="0" y="36" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-size="28" font-weight="800" fill="#003761" letter-spacing="0.5">
+      XYZ <tspan fill="#0066B3">BANK</tspan>
+    </text>
+    
+    <!-- Tagline & Arabic Branding -->
+    <text x="1" y="54" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9.5" font-weight="700" fill="#64748B" letter-spacing="2.2">
+      FINANCIAL SERVICES
+    </text>
+
+    <!-- Subtle separator -->
+    <circle cx="140" cy="51" r="1.8" fill="#CBD5E1" />
+
+    <!-- Arabic Name -->
+    <text x="150" y="54" font-family="'Tajawal', system-ui, sans-serif" font-size="12" font-weight="700" fill="#D97706">
+      بنك XYZ
+    </text>
+  </g>
+</svg>
