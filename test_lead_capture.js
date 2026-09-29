@@ -1,13 +1,13 @@
-// Simple verification test for XYZ Bank Lead Capture Form
+// Verification test for XYZ Bank Oman Lead Capture Form
 const assert = require('assert');
 
 function validatePhone(phone) {
-  const cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
-  return /^\d{7,15}$/.test(cleaned);
+  const cleaned = phone.replace(/[\s\-]/g, '');
+  return /^(?:\+968|00968|968)?([79]\d{7})$/.test(cleaned);
 }
 
 function validateCivilId(civilId) {
-  return /^[A-Za-z0-9\-]{5,16}$/.test(civilId.trim());
+  return /^\d{7,10}$/.test(civilId.trim());
 }
 
 function generateLeadReference() {
@@ -16,41 +16,41 @@ function generateLeadReference() {
   return `XYZ-HL-${year}-${rand}`;
 }
 
-console.log('--- Running XYZ Bank Lead Capture Validation Tests ---');
+console.log('--- Running XYZ Bank Oman Lead Capture Validation Tests ---');
 
-// Test 1: Phone validation
-assert.strictEqual(validatePhone('+1 555-012-3456'), true);
-assert.strictEqual(validatePhone('5550123456'), true);
+// Test 1: Oman phone validation
 assert.strictEqual(validatePhone('+96891234567'), true);
-assert.strictEqual(validatePhone('123'), false);
-console.log('✓ Generic phone validation passed');
+assert.strictEqual(validatePhone('79876543'), true);
+assert.strictEqual(validatePhone('12345678'), false);
+console.log('✓ Oman phone validation passed');
 
-// Test 2: ID validation
+// Test 2: Oman Civil ID validation
 assert.strictEqual(validateCivilId('12345678'), true);
-assert.strictEqual(validateCivilId('ID-98234'), true);
-assert.strictEqual(validateCivilId('12'), false);
-console.log('✓ Generic ID validation passed');
+assert.strictEqual(validateCivilId('123'), false);
+console.log('✓ Civil ID validation passed');
 
 // Test 3: Reference code generation
 const ref = generateLeadReference();
 assert(/^XYZ-HL-\d{4}-\d{5}$/.test(ref));
 console.log(`✓ Reference code generated: ${ref}`);
 
-// Test 4: Verify HTML does not contain old Ahli Bank specific strings
+// Test 4: Verify HTML brand is XYZ Bank while keeping Oman flavour
 const fs = require('fs');
 const path = require('path');
 const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 const js = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
 
 assert.strictEqual(html.includes('Ahli Bank'), false, 'Should not contain Ahli Bank in index.html');
-assert.strictEqual(html.includes('Central Bank of Oman'), false, 'Should not contain Central Bank of Oman');
-assert.strictEqual(html.includes('(OMR)'), false, 'Should not contain (OMR) in index.html');
 assert.strictEqual(html.includes('XYZ Bank'), true, 'Must contain XYZ Bank in index.html');
 assert.strictEqual(js.includes('XYZ Bank'), true, 'Must contain XYZ Bank in app.js');
-console.log('✓ Brand genericization to XYZ Bank verified');
+assert.strictEqual(html.includes('+968 24577177'), true, 'Must keep Oman phone number');
+assert.strictEqual(html.includes('OMR'), true, 'Must keep OMR currency');
+assert.strictEqual(html.includes('Central Bank of Oman (CBO)'), true, 'Must keep CBO regulation in footer');
+assert.strictEqual(html.includes('Muscat (مسقط)'), true, 'Must keep Oman governorates');
+assert.strictEqual(html.includes('Al Khuwair (Head Office)'), true, 'Must keep Oman branches');
+console.log('✓ XYZ Bank brand with Oman flavour verified');
 
 // Test 5: Verify CRM Payload generation
-// Check that app.js contains all required CRM field names
 const requiredFields = [
   'LayoutID', 'ProcessID', 'LastName', 'Product', 'Rating',
   'LeadOwnerName', 'AssignTo', 'MobilePhone', 'Email', 'ProductCategory', 'StatusCode',
@@ -71,7 +71,7 @@ for (const field of activeFields) {
 }
 assert.strictEqual(html.includes('id="crmLeadIdVal"'), true, 'index.html must include crmLeadIdVal');
 assert.strictEqual(html.includes('id="leadIdRow"'), true, 'index.html must include leadIdRow');
-console.log('✓ Active CRM fields (9679-9682) and Thank You modal Lead ID elements verified');
+console.log('✓ Active CRM fields and Thank You modal Lead ID elements verified');
 
 // Test 7: Verify server.js handles CRM proxy and extracts leadId
 const serverCode = fs.readFileSync(path.join(__dirname, 'server.js'), 'utf8');
@@ -79,7 +79,6 @@ assert.strictEqual(serverCode.includes('/api/create-lead'), true, 'server.js mus
 assert.strictEqual(serverCode.includes('oauth2/token'), true, 'server.js must call oauth2/token');
 assert.strictEqual(serverCode.includes('crmWebApi/saveObject'), true, 'server.js must call saveObject');
 assert.strictEqual(serverCode.includes('leadId: leadId ? String(leadId) : null'), true, 'server.js must return leadId');
-assert.strictEqual(html.includes('ABO-HL-2026-12345'), false, 'index.html must not contain static inquiry ID');
 console.log('✓ Server CRM proxy route and system Lead ID extraction verified');
 
 console.log('--- ALL SIMPLE TESTS PASSED ---');

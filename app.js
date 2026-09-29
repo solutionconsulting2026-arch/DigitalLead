@@ -1,5 +1,5 @@
 /**
- * XYZ Bank - Simple Single-Page Home Loan Lead Capture
+ * XYZ Bank Oman - Simple Single-Page Home Loan Lead Capture
  * Straightforward validation, simple submission, and bilingual support.
  */
 
@@ -7,31 +7,31 @@ const I18N = {
   en: {
     pillText: "Home Loan Inquiry",
     mainTitle: "XYZ Bank Home Loan Lead Capture",
-    subTitle: "Interested in owning your dream home? Fill in your details below and our team will get in touch with you.",
+    subTitle: "Interested in owning a home in Oman? Fill in your details below and our team will get in touch with you.",
     secPersonal: "Personal Information",
-    lblFullName: "Full Name (as per ID / Passport)",
-    lblCivilId: "National ID / Resident Card Number",
+    lblFullName: "Full Name (as per Civil ID / Passport)",
+    lblCivilId: "Civil ID / Resident Card Number",
     lblNationality: "Nationality",
-    natOmani: "Citizen",
-    natExpat: "Resident / Expatriate",
+    natOmani: "Omani Citizen",
+    natExpat: "Resident Expatriate",
     lblMobile: "Mobile Number",
     lblEmail: "Email Address",
-    lblGovernorate: "State / Region",
+    lblGovernorate: "Governorate",
     lblBranch: "Preferred XYZ Bank Branch",
     secEmployment: "Employment & Income",
     lblSector: "Employment Sector",
-    lblEmployer: "Employer / Organization Name",
-    lblSalary: "Monthly Net Salary ($)",
+    lblEmployer: "Employer / Ministry Name",
+    lblSalary: "Monthly Net Salary (OMR)",
     yes: "Yes",
     no: "No",
     secLoan: "Home Loan Interest & Property",
     lblPurpose: "Loan Purpose",
     lblPropLoc: "Property Location",
-    lblPropVal: "Estimated Property Value ($)",
-    lblLoanAmt: "Desired Loan Amount ($)",
+    lblPropVal: "Estimated Property Value (OMR)",
+    lblLoanAmt: "Desired Loan Amount (OMR)",
     lblTenure: "Preferred Tenure",
     lblContactTime: "Preferred Time to Call",
-    consentText: "I authorize XYZ Bank to contact me regarding my home loan inquiry and review my basic eligibility.",
+    consentText: "I authorize XYZ Bank Oman to contact me regarding my home loan inquiry and review my basic eligibility.",
     btnSubmit: "Submit Home Loan Inquiry",
     modalTitle: "Lead Created in System!",
     modalDesc: "Your home loan application has been successfully created in XYZ Bank's CRM system. A representative from your preferred branch will contact you shortly.",
@@ -42,31 +42,31 @@ const I18N = {
   ar: {
     pillText: "طلب قرض سكني",
     mainTitle: "تسجيل اهتمام بقرض سكني - بنك XYZ",
-    subTitle: "هل ترغب في امتلاك منزل أحلامك؟ يرجى تعبئة البيانات أدناه وسيتواصل معك فريقنا المختص.",
+    subTitle: "هل ترغب في امتلاك منزل أحلامك في عُمان؟ يرجى تعبئة البيانات أدناه وسيتواصل معك فريقنا المختص.",
     secPersonal: "البيانات الشخصية",
-    lblFullName: "الاسم الكامل (وفقاً للهوية / جواز السفر)",
-    lblCivilId: "رقم الهوية الوطنية / بطاقة الإقامة",
+    lblFullName: "الاسم الكامل (وفقاً للبطاقة المدنية / جواز السفر)",
+    lblCivilId: "الرقم المدني / رقم بطاقة المقيم",
     lblNationality: "الجنسية",
-    natOmani: "مواطن",
-    natExpat: "مقيم",
+    natOmani: "مواطن عُماني",
+    natExpat: "مقيم في عُمان",
     lblMobile: "رقم الهاتف النقال",
     lblEmail: "البريد الإلكتروني",
-    lblGovernorate: "الولاية / المنطقة",
+    lblGovernorate: "المحافظة",
     lblBranch: "فرع بنك XYZ المفضل",
     secEmployment: "بيانات العمل والدخل",
     lblSector: "جهة العمل / القطاع",
-    lblEmployer: "اسم جهة العمل / المؤسسة",
-    lblSalary: "صافي الراتب الشهري ($)",
+    lblEmployer: "اسم جهة العمل / الوزارة",
+    lblSalary: "صافي الراتب الشهري (ريال عماني)",
     yes: "نعم",
     no: "لا",
     secLoan: "تفاصيل القرض السكني والعقار المطلوب",
     lblPurpose: "الغرض من القرض",
     lblPropLoc: "موقع العقار",
-    lblPropVal: "القيمة التقديرية للعقار ($)",
-    lblLoanAmt: "مبلغ القرض المطلوب ($)",
+    lblPropVal: "القيمة التقديرية للعقار (ريال عماني)",
+    lblLoanAmt: "مبلغ القرض المطلوب (ريال عماني)",
     lblTenure: "فترة السداد المفضلة",
     lblContactTime: "الوقت المفضل للتواصل",
-    consentText: "أفوض بنك XYZ بالتواصل معي بخصوص طلبي والتحقق من أهليتي الائتمانية المبدئية.",
+    consentText: "أفوض بنك XYZ عُمان بالتواصل معي بخصوص طلبي والتحقق من أهليتي الائتمانية المبدئية.",
     modalTitle: "تم تسجيل الطلب في النظام بنجاح!",
     modalDesc: "تم إنشاء طلب القرض السكني الخاص بك بنجاح في نظام إدارة علاقات العملاء ببنك XYZ. سيتواصل معك ممثل الفرع المفضل في أقرب وقت.",
     modalLeadId: "رقم الطلب في النظام (Lead ID)",
@@ -95,17 +95,17 @@ function validateForm() {
     valid = false;
   }
 
-  // National ID (flexible alphanumeric / numeric, 5-16 characters)
+  // Civil ID (7-10 digits)
   const civilId = document.getElementById('civilId');
-  if (!/^[A-Za-z0-9\-]{5,16}$/.test(civilId.value.trim())) {
+  if (!/^\d{7,10}$/.test(civilId.value.trim())) {
     markError(civilId);
     valid = false;
   }
 
-  // Mobile (flexible standard phone, 7-15 digits)
+  // Mobile (8-digit Oman number)
   const mobile = document.getElementById('mobile');
-  const cleanMobile = mobile.value.trim().replace(/[\s\-\(\)\+]/g, '');
-  if (!/^\d{7,15}$/.test(cleanMobile)) {
+  const cleanMobile = mobile.value.trim().replace(/[\s\-]/g, '');
+  if (!/^(?:\+968|00968|968)?([79]\d{7})$/.test(cleanMobile)) {
     markError(mobile);
     valid = false;
   }
@@ -181,7 +181,6 @@ function markError(el) {
 function buildCrmPayload(formData) {
   const sectorMap = {
     government: "Government & Public Sector",
-    corporate: "Corporate / Multinational",
     semi_government: "Semi-Government",
     private: "Private Sector",
     self_employed: "Self-Employed / Business Owner"
@@ -194,7 +193,7 @@ function buildCrmPayload(formData) {
     buyout: "Transfer / Buyout Existing Loan"
   };
 
-  const nationalityText = (formData.nationality === 'expat' || formData.nationality === 'resident') ? 'Resident Expatriate' : 'Citizen';
+  const nationalityText = formData.nationality === 'expat' ? 'Resident Expatriate' : 'Omani';
   const mobileClean = parseInt(formData.mobile.replace(/\D/g, ''), 10) || formData.mobile;
   const sectorText = sectorMap[formData.sector] || formData.sector;
   const purposeText = purposeMap[formData.loanPurpose] || formData.loanPurpose;
@@ -335,7 +334,7 @@ async function handleSubmit(e) {
     date: new Date().toISOString(),
     fullName: document.getElementById('fullName').value.trim(),
     civilId: document.getElementById('civilId').value.trim(),
-    nationality: document.querySelector('input[name="nationality"]:checked')?.value || 'citizen',
+    nationality: document.querySelector('input[name="nationality"]:checked')?.value || 'omani',
     mobile: document.getElementById('mobile').value.trim(),
     email: document.getElementById('email').value.trim(),
     governorate: document.getElementById('governorate').value,
