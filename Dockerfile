@@ -1,4 +1,4 @@
-﻿FROM node:20-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -8,6 +8,7 @@ COPY app.js ./
 COPY index.html ./
 COPY styles.css ./
 COPY logo.png ./
+COPY logo.svg ./
 COPY README.md ./
 
 EXPOSE 3000
