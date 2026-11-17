@@ -81,6 +81,10 @@ assert.strictEqual(fs.existsSync(path.join(__dirname, 'api', 'create-lead.js')),
 assert.strictEqual(crmCode.includes('oauth2/token'), true, 'crm.js must call oauth2/token');
 assert.strictEqual(crmCode.includes('crmWebApi/saveObject'), true, 'crm.js must call saveObject');
 assert.strictEqual(crmCode.includes('leadId: leadId ? String(leadId) : null'), true, 'crm.js must return leadId');
+const vercelCfg = JSON.parse(fs.readFileSync(path.join(__dirname, 'vercel.json'), 'utf8'));
+const builtSrcs = vercelCfg.builds.map(b => b.src);
+assert.strictEqual(builtSrcs.includes('api/create-lead.js'), true, 'vercel.json must build api/create-lead.js as a function');
+assert.strictEqual(vercelCfg.builds.some(b => b.src === 'app.js' && b.use === '@vercel/static'), true, 'app.js must be served as a static file, not a function');
 console.log('✓ Server CRM proxy route and system Lead ID extraction verified');
 
 console.log('--- ALL SIMPLE TESTS PASSED ---');
