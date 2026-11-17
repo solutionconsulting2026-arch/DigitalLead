@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY package.json ./
 COPY server.js ./
+COPY crm.js ./
 COPY app.js ./
 COPY index.html ./
 COPY styles.css ./

@@ -1,0 +1,6 @@
+# server.js is the standalone Node server for Docker/local use.
+# On Vercel, static files are served directly and /api/create-lead runs as a function.
+server.js
+Dockerfile
+.dockerignore
+test_lead_capture.js

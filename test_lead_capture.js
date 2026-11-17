@@ -75,10 +75,12 @@ console.log('✓ Active CRM fields and Thank You modal Lead ID elements verified
 
 // Test 7: Verify server.js handles CRM proxy and extracts leadId
 const serverCode = fs.readFileSync(path.join(__dirname, 'server.js'), 'utf8');
+const crmCode = fs.readFileSync(path.join(__dirname, 'crm.js'), 'utf8');
 assert.strictEqual(serverCode.includes('/api/create-lead'), true, 'server.js must define /api/create-lead');
-assert.strictEqual(serverCode.includes('oauth2/token'), true, 'server.js must call oauth2/token');
-assert.strictEqual(serverCode.includes('crmWebApi/saveObject'), true, 'server.js must call saveObject');
-assert.strictEqual(serverCode.includes('leadId: leadId ? String(leadId) : null'), true, 'server.js must return leadId');
+assert.strictEqual(fs.existsSync(path.join(__dirname, 'api', 'create-lead.js')), true, 'Vercel function api/create-lead.js must exist');
+assert.strictEqual(crmCode.includes('oauth2/token'), true, 'crm.js must call oauth2/token');
+assert.strictEqual(crmCode.includes('crmWebApi/saveObject'), true, 'crm.js must call saveObject');
+assert.strictEqual(crmCode.includes('leadId: leadId ? String(leadId) : null'), true, 'crm.js must return leadId');
 console.log('✓ Server CRM proxy route and system Lead ID extraction verified');
 
 console.log('--- ALL SIMPLE TESTS PASSED ---');
